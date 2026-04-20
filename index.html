@@ -554,6 +554,19 @@
     align-items: center;
     gap: 8px;
   }
+  .scheduled-item .si-grip {
+    color: var(--ink-mute);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: -1px;
+    line-height: 1;
+    cursor: grab;
+    flex-shrink: 0;
+    padding-right: 2px;
+  }
+  .scheduled-item[draggable="true"] { cursor: grab; }
+  .scheduled-item[draggable="true"]:active { cursor: grabbing; }
+  .scheduled-item.dragging { opacity: .4; }
   .scheduled-item .time {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
@@ -1135,6 +1148,10 @@ function renderPlan() {
         el.className = `scheduled-item att-${attempt.status}`;
         el.dataset.attemptId = attempt.id;
 
+        // Csak még le nem zárt (pending) alkalom mozgatható
+        const canMove = attempt.status === 'pending';
+        if (canMove) el.draggable = true;
+
         const actionBtns = attempt.status === 'pending'
           ? `<button class="mark-pass" title="Sikerült">✓</button>
              <button class="mark-fail" title="Nem sikerült">✗</button>`
@@ -1142,12 +1159,24 @@ function renderPlan() {
 
         el.innerHTML = `
           <div class="si-main">
+            ${canMove ? '<span class="si-grip" title="Húzd másik napra">⋮⋮</span>' : ''}
             <span class="time">${attempt.time || '—'}</span>
             <span class="subj"></span>
           </div>
           <div class="si-actions">${actionBtns}</div>
         `;
         el.querySelector('.subj').textContent = subject.name;
+
+        // Drag: aktív alkalom másik napra húzása
+        if (canMove) {
+          el.addEventListener('dragstart', (ev) => {
+            ev.dataTransfer.setData('text/plain', 'attempt:' + attempt.id);
+            ev.dataTransfer.effectAllowed = 'move';
+            el.classList.add('dragging');
+            ev.stopPropagation();
+          });
+          el.addEventListener('dragend', () => el.classList.remove('dragging'));
+        }
 
         // Sikerült
         const pb = el.querySelector('.mark-pass');
@@ -1186,7 +1215,7 @@ function renderPlan() {
       });
     }
 
-    // Drop target: csak akkor fogad, ha a tárgy szabad (free)
+    // Drop target: elfogad új tárgyat (subject:) VAGY meglévő alkalmat (attempt:)
     card.addEventListener('dragover', (e) => {
       e.preventDefault();
       card.classList.add('drop-hover');
@@ -1196,28 +1225,55 @@ function renderPlan() {
       e.preventDefault();
       card.classList.remove('drop-hover');
       const data = e.dataTransfer.getData('text/plain');
-      if (!data.startsWith('subject:')) return;
-      const subId = data.slice('subject:'.length);
-      const sub = state.subjects.find(s => s.id === subId);
-      if (!sub) return;
 
-      const status = subjectStatus(sub);
-      if (status !== 'free') {
-        if (status === 'done') toast('Ez a tárgy már teljesítve van.');
-        else if (status === 'scheduled') toast('Már be van ütemezve — zárd le előbb (✓ vagy ✗).');
-        else if (status === 'failed_out') toast('Elfogytak a próbálkozások (3/3).');
+      // === ESET 1: új tárgy behúzása a bal oldali listából ===
+      if (data.startsWith('subject:')) {
+        const subId = data.slice('subject:'.length);
+        const sub = state.subjects.find(s => s.id === subId);
+        if (!sub) return;
+
+        const status = subjectStatus(sub);
+        if (status !== 'free') {
+          if (status === 'done') toast('Ez a tárgy már teljesítve van.');
+          else if (status === 'scheduled') toast('Már be van ütemezve — zárd le előbb (✓ vagy ✗).');
+          else if (status === 'failed_out') toast('Elfogytak a próbálkozások (3/3).');
+          return;
+        }
+
+        sub.attempts.push({
+          id: uid(),
+          date: dateStr,
+          time: sub.defaultTime || '10:00',
+          status: 'pending'
+        });
+        saveLocal();
+        render();
+        toast(`${sub.name} betervezve: ${formatDateHu(dateStr)}`);
         return;
       }
 
-      sub.attempts.push({
-        id: uid(),
-        date: dateStr,
-        time: sub.defaultTime || '10:00',
-        status: 'pending'
-      });
-      saveLocal();
-      render();
-      toast(`${sub.name} betervezve: ${formatDateHu(dateStr)}`);
+      // === ESET 2: meglévő aktív alkalom áthelyezése másik napra ===
+      if (data.startsWith('attempt:')) {
+        const attId = data.slice('attempt:'.length);
+        const sub = findSubjectByAttempt(attId);
+        if (!sub) return;
+        const att = sub.attempts.find(a => a.id === attId);
+        if (!att) return;
+
+        // Csak még nem lezárt alkalom mozdítható
+        if (att.status !== 'pending') {
+          toast('A lezárt alkalom nem mozgatható. Vond vissza (↶) előbb.');
+          return;
+        }
+
+        // Nincs változás, ha ugyanarra a napra húzzák
+        if (att.date === dateStr) return;
+
+        att.date = dateStr;
+        saveLocal();
+        render();
+        toast(`${sub.name} áthelyezve: ${formatDateHu(dateStr)}`);
+      }
     });
 
     grid.appendChild(card);
