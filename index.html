@@ -1,1511 +1,455 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="hu">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vizsgaterv</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    /* Vidám, modern paletta — tejfehér háttér, indigo/teal/korall accent-ek */
-    --bg: #faf8f4;
-    --bg-pattern: #f0ebe1;
-    --surface: #ffffff;
-    --surface-alt: #f5f1e8;
-    --border: #e5dfd1;
-    --border-strong: #cfc6b0;
-    --ink: #1d1b17;
-    --ink-soft: #54504a;
-    --ink-mute: #8a857a;
-
-    /* Accent colors */
-    --indigo: #5b52d9;
-    --indigo-soft: #ebe9fb;
-    --teal: #0fa88a;
-    --teal-soft: #d7f2ea;
-    --coral: #f26b5e;
-    --coral-soft: #fde5e0;
-    --amber: #f4a72a;
-    --amber-soft: #fdeecb;
-    --sky: #3a9de0;
-    --sky-soft: #dcf0fc;
-    --mint: #69d4a5;
-    --lavender: #b4a7f0;
-
-    --shadow-sm: 0 1px 2px rgba(29,27,23,.04), 0 2px 8px rgba(29,27,23,.04);
-    --shadow-md: 0 4px 12px rgba(29,27,23,.06), 0 12px 28px rgba(29,27,23,.08);
-    --radius-sm: 8px;
-    --radius: 12px;
-    --radius-lg: 18px;
-  }
-
-  * { box-sizing: border-box; }
-
-  html, body {
-    margin: 0;
-    padding: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: 'Inter', -apple-system, sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
-    min-height: 100vh;
-  }
-
-  body {
-    background-image:
-      radial-gradient(circle at 15% 0%, rgba(180,167,240,.25), transparent 40%),
-      radial-gradient(circle at 85% 10%, rgba(244,167,42,.15), transparent 40%),
-      radial-gradient(circle at 50% 100%, rgba(15,168,138,.1), transparent 50%);
-    background-attachment: fixed;
-  }
-
-  .wrap {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 28px 24px 60px;
-  }
-
-  /* Header */
-  header.top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    padding-bottom: 22px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
-
-  .brand h1 {
-    font-family: 'Fraunces', serif;
-    font-weight: 500;
-    font-size: 42px;
-    margin: 0;
-    letter-spacing: -0.03em;
-    color: var(--ink);
-    line-height: 1;
-  }
-  .brand h1 .accent {
-    color: var(--indigo);
-    font-style: italic;
-    font-weight: 400;
-  }
-  .brand h1 .dot {
-    display: inline-block;
-    width: 10px; height: 10px;
-    background: var(--coral);
-    border-radius: 50%;
-    margin-left: 2px;
-    vertical-align: middle;
-    transform: translateY(-6px);
-  }
-  .brand .tagline {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--ink-mute);
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    margin-top: 8px;
-  }
-
-  .user-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  .user-box .label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--ink-mute);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-  .user-name {
-    font-family: 'Fraunces', serif;
-    font-size: 18px;
-    color: var(--indigo);
-    font-weight: 500;
-    padding: 4px 12px;
-    background: var(--indigo-soft);
-    border-radius: 20px;
-  }
-
-  /* Buttons */
-  button, .btn {
-    background: var(--surface);
-    color: var(--ink);
-    border: 1px solid var(--border-strong);
-    padding: 8px 14px;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    border-radius: var(--radius-sm);
-    transition: all .15s ease;
-    font-weight: 500;
-  }
-  button:hover, .btn:hover {
-    background: var(--surface-alt);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
-  }
-  button:active, .btn:active { transform: translateY(0); }
-  button.primary {
-    background: var(--indigo);
-    color: #fff;
-    border-color: var(--indigo);
-  }
-  button.primary:hover {
-    background: #4c43c9;
-    border-color: #4c43c9;
-  }
-  button.ghost {
-    background: transparent;
-    border-color: var(--border);
-  }
-  button.ghost:hover { background: var(--surface); }
-
-  /* Inputs */
-  input[type="text"], input[type="time"] {
-    background: var(--surface);
-    color: var(--ink);
-    border: 1px solid var(--border);
-    padding: 9px 12px;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    border-radius: var(--radius-sm);
-    outline: none;
-    transition: border-color .15s, box-shadow .15s;
-  }
-  input[type="text"]:focus, input[type="time"]:focus {
-    border-color: var(--indigo);
-    box-shadow: 0 0 0 3px var(--indigo-soft);
-  }
-
-  /* Layout */
-  .layout {
-    display: grid;
-    grid-template-columns: 380px 1fr;
-    gap: 24px;
-    align-items: start;
-  }
-  @media (max-width: 960px) {
-    .layout { grid-template-columns: 1fr; }
-  }
-
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-  }
-
-  .panel-head {
-    padding: 18px 22px 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--border);
-    background: linear-gradient(180deg, var(--surface) 0%, var(--surface-alt) 100%);
-  }
-  .panel-head h2 {
-    font-family: 'Fraunces', serif;
-    font-weight: 500;
-    font-size: 20px;
-    margin: 0;
-    letter-spacing: -0.01em;
-  }
-  .panel-head .count {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--indigo);
-    background: var(--indigo-soft);
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-weight: 500;
-  }
-
-  .panel-body { padding: 16px 18px 20px; }
-
-  /* Add form - compact */
-  .add-form {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 12px;
-    margin-bottom: 16px;
-    background: var(--surface-alt);
-    border-radius: var(--radius);
-    border: 1px dashed var(--border-strong);
-  }
-  .add-form .row {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 10px;
-    align-items: center;
-  }
-  .add-form .time-label {
-    font-size: 11px;
-    color: var(--ink-mute);
-    font-family: 'JetBrains Mono', monospace;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .add-form input[type="time"] { width: 110px; }
-  .add-form input { width: 100%; }
-
-  .hint {
-    font-size: 11px;
-    color: var(--ink-mute);
-    font-style: italic;
-    line-height: 1.4;
-  }
-
-  /* Subject list (accordion) */
-  .exam-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    min-height: 60px;
-  }
-
-  .exam-chip {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    transition: all .2s ease;
-    user-select: none;
-    overflow: hidden;
-    box-shadow: var(--shadow-sm);
-  }
-  .exam-chip:hover { border-color: var(--border-strong); }
-  .exam-chip.dragging { opacity: .4; }
-
-  .chip-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    cursor: pointer;
-  }
-  .chip-head .chevron {
-    width: 16px; height: 16px;
-    flex-shrink: 0;
-    color: var(--ink-mute);
-    transition: transform .2s;
-    margin-right: -2px;
-  }
-  .exam-chip.open .chevron { transform: rotate(90deg); }
-
-  .chip-drag-handle {
-    width: 16px;
-    color: var(--ink-mute);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    flex-shrink: 0;
-    cursor: grab;
-    line-height: 1;
-    letter-spacing: -1px;
-  }
-  .exam-chip.status-free .chip-drag-handle { color: var(--indigo); }
-  .exam-chip.status-scheduled .chip-drag-handle,
-  .exam-chip.status-done .chip-drag-handle,
-  .exam-chip.status-failed_out .chip-drag-handle {
-    cursor: not-allowed; opacity: .4;
-  }
-
-  .chip-info { flex: 1; min-width: 0; }
-  .chip-subject {
-    font-weight: 500;
-    color: var(--ink);
-    font-size: 14px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .chip-meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--ink-mute);
-    margin-top: 2px;
-  }
-
-  .status-badge {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 10px;
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-    font-weight: 500;
-  }
-  .status-badge.status-free {
-    color: var(--indigo);
-    background: var(--indigo-soft);
-  }
-  .status-badge.status-scheduled {
-    color: #b8740f;
-    background: var(--amber-soft);
-  }
-  .status-badge.status-done {
-    color: var(--teal);
-    background: var(--teal-soft);
-  }
-  .status-badge.status-failed_out {
-    color: #b03a2f;
-    background: var(--coral-soft);
-  }
-
-  .chip-del {
-    background: transparent;
-    border: none;
-    color: var(--ink-mute);
-    padding: 4px 6px;
-    font-size: 14px;
-    cursor: pointer;
-    border-radius: 4px;
-    line-height: 1;
-  }
-  .chip-del:hover { color: var(--coral); background: var(--coral-soft); transform: none; box-shadow: none; }
-
-  /* Left color stripe by status */
-  .exam-chip.status-free { border-left: 4px solid var(--indigo); }
-  .exam-chip.status-scheduled { border-left: 4px solid var(--amber); }
-  .exam-chip.status-done {
-    border-left: 4px solid var(--teal);
-    background: linear-gradient(90deg, var(--teal-soft) 0%, var(--surface) 60%);
-  }
-  .exam-chip.status-done .chip-subject { text-decoration: line-through; text-decoration-color: var(--teal); }
-  .exam-chip.status-failed_out {
-    border-left: 4px solid var(--coral);
-    background: linear-gradient(90deg, var(--coral-soft) 0%, var(--surface) 60%);
-  }
-
-  /* Accordion body */
-  .chip-body {
-    display: none;
-    padding: 0 12px 12px 44px;
-    font-size: 12px;
-    color: var(--ink-soft);
-  }
-  .exam-chip.open .chip-body { display: block; }
-
-  .chip-body-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 4px 0;
-    border-top: 1px dashed var(--border);
-  }
-  .chip-body-row:first-child { border-top: none; padding-top: 8px; }
-  .chip-body-label {
-    color: var(--ink-mute);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-  }
-  .chip-body-value {
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--ink);
-  }
-  .attempts-list {
-    list-style: none;
-    padding: 0;
-    margin: 6px 0 0 0;
-    font-size: 11px;
-  }
-  .attempts-list li {
-    display: flex;
-    justify-content: space-between;
-    padding: 3px 0;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--ink-soft);
-  }
-  .attempts-list .att-status {
-    font-size: 10px;
-    padding: 1px 7px;
-    border-radius: 8px;
-  }
-  .attempts-list .att-status.passed { background: var(--teal-soft); color: var(--teal); }
-  .attempts-list .att-status.failed { background: var(--coral-soft); color: #b03a2f; }
-  .attempts-list .att-status.pending { background: var(--amber-soft); color: #b8740f; }
-
-  .empty {
-    color: var(--ink-mute);
-    font-style: italic;
-    font-size: 12px;
-    text-align: center;
-    padding: 20px 10px;
-    border: 1px dashed var(--border);
-    border-radius: var(--radius);
-  }
-
-  /* Calendar grid */
-  .range-box {
-    padding: 12px 22px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    font-size: 12px;
-    background: var(--surface-alt);
-  }
-  .range-box label {
-    color: var(--ink-mute);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .range-box .hint { margin: 0; }
-
-  .plan-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-    gap: 14px;
-  }
-
-  .day-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px;
-    min-height: 160px;
-    transition: all .2s ease;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-  }
-  .day-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 14px; right: 14px;
-    height: 3px;
-    background: var(--lavender);
-    border-radius: 0 0 3px 3px;
-  }
-  .day-card:nth-child(6n+1)::before { background: var(--indigo); }
-  .day-card:nth-child(6n+2)::before { background: var(--teal); }
-  .day-card:nth-child(6n+3)::before { background: var(--coral); }
-  .day-card:nth-child(6n+4)::before { background: var(--amber); }
-  .day-card:nth-child(6n+5)::before { background: var(--sky); }
-  .day-card:nth-child(6n+6)::before { background: var(--mint); }
-
-  .day-card.drop-hover {
-    border-color: var(--indigo);
-    background: var(--indigo-soft);
-    transform: scale(1.02);
-    box-shadow: var(--shadow-md);
-  }
-  .day-card.has-items { box-shadow: var(--shadow-sm); }
-
-  .day-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 10px;
-    padding-bottom: 10px;
-    border-bottom: 1px dashed var(--border);
-  }
-  .day-head .date {
-    font-family: 'Fraunces', serif;
-    font-size: 22px;
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    color: var(--ink);
-  }
-  .day-head .dow {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    color: var(--ink-mute);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-
-  .day-items {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    flex: 1;
-  }
-
-  .scheduled-item {
-    background: var(--amber-soft);
-    border: 1px solid transparent;
-    border-left: 3px solid var(--amber);
-    padding: 8px 10px;
-    border-radius: var(--radius-sm);
-    font-size: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .scheduled-item .si-main {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .scheduled-item .si-grip {
-    color: var(--ink-mute);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    letter-spacing: -1px;
-    line-height: 1;
-    cursor: grab;
-    flex-shrink: 0;
-    padding-right: 2px;
-  }
-  .scheduled-item[draggable="true"] { cursor: grab; }
-  .scheduled-item[draggable="true"]:active { cursor: grabbing; }
-  .scheduled-item.dragging { opacity: .4; }
-  .scheduled-item .time {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: #b8740f;
-    font-weight: 500;
-    flex-shrink: 0;
-    padding: 1px 6px;
-    background: rgba(255,255,255,.6);
-    border-radius: 4px;
-  }
-  .scheduled-item .subj {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-weight: 500;
-    color: var(--ink);
-  }
-  .scheduled-item .si-actions {
-    display: flex;
-    gap: 4px;
-    justify-content: flex-end;
-  }
-  .scheduled-item .si-actions button {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--ink-soft);
-    padding: 2px 8px;
-    font-size: 11px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: 'JetBrains Mono', monospace;
-    transform: none;
-    box-shadow: none;
-  }
-  .scheduled-item .mark-pass:hover {
-    background: var(--teal);
-    border-color: var(--teal);
-    color: #fff;
-  }
-  .scheduled-item .mark-fail:hover {
-    background: var(--coral);
-    border-color: var(--coral);
-    color: #fff;
-  }
-  .scheduled-item .undo:hover {
-    background: var(--surface-alt);
-    color: var(--ink);
-  }
-
-  .scheduled-item.att-passed {
-    background: var(--teal-soft);
-    border-left-color: var(--teal);
-  }
-  .scheduled-item.att-passed .time {
-    color: var(--teal);
-  }
-
-  .scheduled-item.att-failed {
-    background: var(--coral-soft);
-    border-left-color: var(--coral);
-    opacity: .85;
-  }
-  .scheduled-item.att-failed .subj {
-    color: var(--ink-soft);
-    text-decoration: line-through;
-    text-decoration-color: var(--coral);
-  }
-  .scheduled-item.att-failed .time {
-    color: #b03a2f;
-  }
-
-  .day-empty {
-    color: var(--ink-mute);
-    font-size: 11px;
-    font-style: italic;
-    text-align: center;
-    padding: 16px 8px;
-    border: 1px dashed var(--border);
-    border-radius: var(--radius-sm);
-  }
-
-  /* Modal */
-  .modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(29,27,23,.45);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    backdrop-filter: blur(6px);
-  }
-  .modal-backdrop.show { display: flex; }
-
-  .modal {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 32px;
-    width: 90%;
-    max-width: 440px;
-    box-shadow: var(--shadow-md);
-  }
-  .modal h3 {
-    font-family: 'Fraunces', serif;
-    font-weight: 500;
-    font-size: 26px;
-    margin: 0 0 8px 0;
-    letter-spacing: -0.02em;
-    color: var(--ink);
-  }
-  .modal h3 .em { color: var(--indigo); font-style: italic; }
-  .modal p {
-    color: var(--ink-soft);
-    font-size: 13px;
-    margin: 0 0 20px 0;
-    line-height: 1.5;
-  }
-  .modal input {
-    width: 100%;
-    padding: 11px 14px;
-    font-size: 15px;
-    margin-bottom: 16px;
-  }
-  .modal .actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-  }
-
-  /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--ink);
-    color: #fff;
-    padding: 12px 20px;
-    border-radius: var(--radius);
-    font-size: 13px;
-    opacity: 0;
-    transition: all .3s ease;
-    pointer-events: none;
-    z-index: 200;
-    box-shadow: var(--shadow-md);
-    font-weight: 500;
-  }
-  .toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 10px; height: 10px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 5px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--ink-mute); }
-
-  footer {
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px dashed var(--border);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    color: var(--ink-mute);
-    text-align: center;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-</style>
-</head>
-<body>
-
-<div id="nameModal" class="modal-backdrop">
-  <div class="modal">
-    <h3>Üdv a <span class="em">vizsgatervben</span></h3>
-    <p>Add meg a neved, hogy a terved hozzád tartozzon. A böngésződben mentjük, így legközelebb is folytathatod.</p>
-    <input type="text" id="nameInput" placeholder="Pl. László" maxlength="40">
-    <div class="actions">
-      <button class="primary" id="nameSubmit">Belépés</button>
-    </div>
-  </div>
-</div>
-
-<div class="wrap">
-  <header class="top">
-    <div class="brand">
-      <h1><span>Vizsga</span><span class="accent">terv</span><span class="dot"></span></h1>
-      <div class="tagline">Exam Season · Drag &amp; Drop</div>
-    </div>
-    <div class="user-box">
-      <span class="label">User:</span>
-      <span class="user-name" id="userName">—</span>
-      <button class="ghost" id="switchUser" title="Felhasználóváltás">váltás</button>
-      <button class="ghost" id="exportBtn">Export .txt</button>
-      <button class="ghost" id="shareBtn">Link másolása</button>
-    </div>
-  </header>
-
-  <div class="layout">
-    <!-- Left: exam pool -->
-    <aside class="panel" id="pool">
-      <div class="panel-head">
-        <h2>Tárgyak</h2>
-        <span class="count" id="poolCount">0</span>
-      </div>
-      <div class="panel-body">
-        <div class="add-form">
-          <input type="text" id="newSubject" placeholder="Új tárgy neve (opcionális)" maxlength="80">
-          <div class="row">
-            <label class="time-label">Alapért. időpont:</label>
-            <input type="time" id="newTime" title="Alapértelmezett időpont" value="10:00">
-          </div>
-          <button class="primary" id="addExam">+ Tárgy hozzáadása</button>
-          <div class="hint">Az Anyagismeret már felvéve. Új tárgyat itt adhatsz hozzá. A tárgyakat drag-and-droppal húzd egy vizsganapra.</div>
-        </div>
-
-        <div class="exam-list" id="examList">
-          <div class="empty">Még nincs felvett vizsga.</div>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Right: plan grid -->
-    <main class="panel">
-      <div class="panel-head">
-        <h2>Napok</h2>
-        <span class="count" id="dayCount">0</span>
-      </div>
-      <div class="range-box">
-        <label>Vizsgaidőszak:</label>
-        <span style="color:var(--text)">2026. május 15. — június 26.</span>
-        <span class="hint" style="margin-left:auto">6 vizsganap</span>
-      </div>
-      <div class="panel-body">
-        <div class="plan-grid" id="planGrid"></div>
-      </div>
-    </main>
-  </div>
-
-  <footer>
-    Lokálisan + URL-ben tárolva · Megosztható link gomb felül · Export .txt-be
-  </footer>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-// Fix vizsganapok — pénteki alkalmak
-const EXAM_DAYS = [
-  '2026-05-15',
-  '2026-05-29',
-  '2026-06-05',
-  '2026-06-12',
-  '2026-06-19',
-  '2026-06-26'
-];
-
-// Előre betöltött tárgyak (bővítheted új tárgyakkal)
-const PRESET_SUBJECTS = [
-  { name: 'Anyagismeret',                   defaultTime: '13:00' },
-  { name: 'Csomagolás',                     defaultTime: '13:00' },
-  { name: 'Járművek',                       defaultTime: '15:00' },
-  { name: 'Közlekedésbiztonság',            defaultTime: '14:00' },
-  { name: 'Közlekedésépítés',               defaultTime: '15:00' },
-  { name: 'Statika',                        defaultTime: '13:00' },
-  { name: 'Statisztika',                    defaultTime: '15:00' },
-  { name: 'Személyközlekedési vállalatok',  defaultTime: '13:00' },
-  { name: 'Vasúti közlekedés alapjai',      defaultTime: '16:00' },
-  { name: 'Vezetési ismeretek',             defaultTime: '14:00' },
-  { name: 'Közgazdaságtan',                 defaultTime: '15:00' },
-  { name: 'Matematika',                     defaultTime: '12:00' }
-];
-
-const MAX_ATTEMPTS = 3;
-
-// ============ STATE ============
-// Új modell:
-// subjects: [{ id, name, defaultTime, attempts: [{ date, time, status }], done: bool }]
-//   status: 'pending' | 'passed' | 'failed'
-//   done: true = sikerült valamelyik alkalommal, többet nem lehet felvenni
-let state = {
-  user: null,
-  subjects: []
-};
-
-const STORAGE_KEY = 'vizsgaterv_v1';
-
-// ============ UTILS ============
-function uid() {
-  return Math.random().toString(36).slice(2, 10);
-}
-
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(t._to);
-  t._to = setTimeout(() => t.classList.remove('show'), 2200);
-}
-
-function todayStr() {
-  const d = new Date();
-  return d.toISOString().slice(0, 10);
-}
-
-function addDays(dateStr, days) {
-  const d = new Date(dateStr + 'T00:00:00');
-  d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
-}
-
-const DOW_HU = ['Vas', 'Hét', 'Kedd', 'Sze', 'Csüt', 'Pén', 'Szo'];
-const MONTH_HU = ['jan', 'feb', 'már', 'ápr', 'máj', 'jún', 'júl', 'aug', 'szept', 'okt', 'nov', 'dec'];
-
-function formatDateHu(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00');
-  return `${MONTH_HU[d.getMonth()]}. ${d.getDate()}.`;
-}
-
-function dayOfWeek(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00');
-  return d.getDay();
-}
-
-// ============ PERSISTENCE ============
-function saveLocal() {
-  if (!state.user) return;
-  const data = {
-    user: state.user,
-    subjects: state.subjects
-  };
-  try {
-    localStorage.setItem(STORAGE_KEY + ':' + state.user, JSON.stringify(data));
-    localStorage.setItem(STORAGE_KEY + ':lastUser', state.user);
-  } catch(e) {
-    console.warn('localStorage save failed', e);
-  }
-  updateUrl();
-}
-
-function loadLocal(user) {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY + ':' + user);
-    if (!raw) return null;
-    return JSON.parse(raw);
-  } catch(e) {
-    return null;
-  }
-}
-
-function updateUrl() {
-  const payload = {
-    u: state.user,
-    s: state.subjects
-  };
-  try {
-    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-    const newUrl = window.location.pathname + '#' + encoded;
-    history.replaceState(null, '', newUrl);
-  } catch(e) {
-    console.warn('URL encode failed', e);
-  }
-}
-
-function loadFromUrl() {
-  const hash = window.location.hash.slice(1);
-  if (!hash) return null;
-  try {
-    const json = decodeURIComponent(escape(atob(hash)));
-    const payload = JSON.parse(json);
-    return {
-      user: payload.u,
-      subjects: payload.s || []
-    };
-  } catch(e) {
-    console.warn('URL decode failed', e);
-    return null;
-  }
-}
-
-// ===== Segédfüggvények az új modellhez =====
-
-// Van-e aktív (pending) próbálkozás? Ha igen, a tárgy "lezárva" van az új ütemezéshez
-function activeAttempt(subject) {
-  return subject.attempts.find(a => a.status === 'pending') || null;
-}
-
-// A tárgy státusza: 'done' (sikerült), 'failed_out' (3/3 megbukott), 'scheduled' (aktív), 'free' (felvehető)
-function subjectStatus(subject) {
-  if (subject.done) return 'done';
-  const hasPending = !!activeAttempt(subject);
-  if (hasPending) return 'scheduled';
-  if (subject.attempts.length >= MAX_ATTEMPTS) return 'failed_out';
-  return 'free';
-}
-
-function subjectLabel(subject) {
-  const attempts = subject.attempts.length;
-  const status = subjectStatus(subject);
-  if (status === 'done') return `teljesítve`;
-  if (status === 'failed_out') return `elbukva (${attempts}/${MAX_ATTEMPTS})`;
-  return `${attempts}/${MAX_ATTEMPTS} próbálkozás`;
-}
-
-function findSubjectByAttempt(attemptId) {
-  for (const s of state.subjects) {
-    if (s.attempts.some(a => a.id === attemptId)) return s;
-  }
-  return null;
-}
-
-function hasScheduledOnDate(dateStr) {
-  return state.subjects.some(s => s.attempts.some(a => a.date === dateStr && a.status === 'pending'));
-}
-
-// ============ RENDER ============
-function render() {
-  renderUser();
-  renderPool();
-  renderPlan();
-}
-
-function renderUser() {
-  document.getElementById('userName').textContent = state.user || '—';
-}
-
-// Nyitott accordion-ok (túléli a re-rendereket)
-const openChips = new Set();
-
-function renderPool() {
-  const list = document.getElementById('examList');
-  const count = document.getElementById('poolCount');
-
-  const subjects = state.subjects;
-  count.textContent = subjects.length;
-
-  if (subjects.length === 0) {
-    list.innerHTML = '<div class="empty">Nincs tárgy felvéve.<br>Adj hozzá egyet fent.</div>';
-    return;
-  }
-
-  // Rendezés: szabadok elöl, beütemezettek, teljesítettek, elbukottak
-  const order = { free: 0, scheduled: 1, done: 2, failed_out: 3 };
-  const sorted = [...subjects].sort((a, b) => {
-    return order[subjectStatus(a)] - order[subjectStatus(b)]
-      || a.name.localeCompare(b.name, 'hu');
-  });
-
-  list.innerHTML = '';
-  sorted.forEach(sub => {
-    const status = subjectStatus(sub);
-    const canDrag = status === 'free';
-    const isOpen = openChips.has(sub.id);
-
-    const chip = document.createElement('div');
-    chip.className = `exam-chip status-${status}${isOpen ? ' open' : ''}`;
-    if (canDrag) chip.draggable = true;
-    chip.dataset.subjectId = sub.id;
-
-    const active = activeAttempt(sub);
-
-    // Attempts lista HTML
-    let attemptsHtml = '';
-    if (sub.attempts.length > 0) {
-      attemptsHtml = '<ul class="attempts-list">';
-      sub.attempts.forEach((att, i) => {
-        const label = att.status === 'passed' ? 'sikerült'
-          : att.status === 'failed' ? 'nem sikerült'
-          : 'aktív';
-        attemptsHtml += `<li>
-          <span>${i + 1}. ${formatDateHu(att.date)} · ${att.time}</span>
-          <span class="att-status ${att.status}">${label}</span>
-        </li>`;
-      });
-      attemptsHtml += '</ul>';
-    } else {
-      attemptsHtml = '<div style="color:var(--ink-mute);font-style:italic;padding:4px 0;">még nincs próbálkozás</div>';
-    }
-
-    const nextInfoHtml = active
-      ? `<div class="chip-body-row"><span class="chip-body-label">Aktív</span><span class="chip-body-value">${formatDateHu(active.date)} · ${active.time}</span></div>`
-      : '';
-
-    chip.innerHTML = `
-      <div class="chip-head">
-        <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4 L10 8 L6 12"/></svg>
-        <span class="chip-drag-handle" title="${canDrag ? 'Húzd egy napra' : 'Nem húzható'}">⋮⋮</span>
-        <div class="chip-info">
-          <div class="chip-subject"></div>
-          <div class="chip-meta">
-            <span class="status-badge status-${status}">${subjectLabel(sub)}</span>
-            <span>${sub.defaultTime || '10:00'}</span>
-          </div>
-        </div>
-        <button class="chip-del" title="Tárgy törlése">✕</button>
-      </div>
-      <div class="chip-body">
-        <div class="chip-body-row"><span class="chip-body-label">Alapért. idő</span><span class="chip-body-value">${sub.defaultTime || '10:00'}</span></div>
-        ${nextInfoHtml}
-        <div class="chip-body-row"><span class="chip-body-label">Próbálkozások</span><span class="chip-body-value">${sub.attempts.length}/${MAX_ATTEMPTS}</span></div>
-        ${attemptsHtml}
-      </div>
-    `;
-    chip.querySelector('.chip-subject').textContent = sub.name;
-
-    // Accordion toggle (fejléc-re kattintva nyílik, kivéve drag-handle/del)
-    const head = chip.querySelector('.chip-head');
-    head.addEventListener('click', (e) => {
-      if (e.target.closest('.chip-del') || e.target.closest('.chip-drag-handle')) return;
-      if (openChips.has(sub.id)) openChips.delete(sub.id);
-      else openChips.add(sub.id);
-      chip.classList.toggle('open');
-    });
-
-    chip.querySelector('.chip-del').addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (confirm(`Törlöd a(z) "${sub.name}" tárgyat minden próbálkozással együtt?`)) {
-        state.subjects = state.subjects.filter(x => x.id !== sub.id);
-        openChips.delete(sub.id);
-        saveLocal();
-        render();
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light" />
+    <title>Pethő Travel – Sofőr demó</title>
+    <style>
+      :root {
+        --ink: #172033;
+        --muted: #667085;
+        --line: #dce3ee;
+        --soft: #f3f6fb;
+        --card: #ffffff;
+        --brand: #155eef;
+        --brand-strong: #0b4dd8;
+        --brand-soft: #eaf1ff;
+        --green: #067647;
+        --green-soft: #e8f7ef;
+        --amber: #b54708;
+        --amber-soft: #fff3e0;
+        --red: #b42318;
+        --red-soft: #ffeded;
+        --shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+        --shadow-lg: 0 24px 70px rgba(16, 24, 40, 0.22);
       }
-    });
+      * { box-sizing: border-box; }
+      html { background: #e9eef6; }
+      body { margin: 0; color: var(--ink); background: #e9eef6; font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      button, input, select, textarea { font: inherit; }
+      button { color: inherit; }
+      button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid rgba(21,94,239,.28); outline-offset: 2px; }
+      .app { width: min(100%, 720px); min-height: 100dvh; margin: 0 auto; background: var(--soft); box-shadow: 0 0 0 1px rgba(16,24,40,.05); }
+      .demo-banner { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 34px; padding: 6px 16px; color: #344054; background: #fff6d9; border-bottom: 1px solid #f3d98b; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+      .appbar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 70px; padding: 12px 18px; color: #fff; background: linear-gradient(135deg, #0b4dd8, #1970f6); box-shadow: 0 4px 14px rgba(15, 76, 205, .22); }
+      .brandline { margin: 0 0 2px; color: #bed2ff; font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+      .appbar h1 { margin: 0; font-size: 20px; line-height: 1.2; }
+      .date { margin: 3px 0 0; color: #dbe7ff; font-size: 13px; }
+      .header-actions { display: flex; gap: 8px; }
+      .icon-button { display: inline-grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 14px; color: inherit; background: rgba(255,255,255,.14); cursor: pointer; }
+      .icon-button:hover { background: rgba(255,255,255,.22); }
+      .content { padding: 16px 16px 104px; }
+      .section { margin-top: 20px; }
+      .section:first-child { margin-top: 0; }
+      .section-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 0 10px; }
+      .section-head h2, .eyebrow { margin: 0; color: #667799; font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+      .section-link { min-height: 40px; padding: 0 4px; border: 0; color: var(--brand); background: transparent; font-size: 13px; font-weight: 750; cursor: pointer; }
+      .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+      .stat { padding: 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); box-shadow: 0 3px 12px rgba(16,24,40,.04); }
+      .stat-label { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 12px; }
+      .stat strong { display: block; margin-top: 6px; font-size: 18px; font-variant-numeric: tabular-nums; }
+      .card { border: 1px solid var(--line); border-radius: 20px; background: var(--card); box-shadow: var(--shadow); }
+      .hero { overflow: hidden; }
+      .hero-body { padding: 18px; }
+      .hero-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+      .time { font-size: 34px; line-height: 1; font-weight: 850; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+      .badge { display: inline-flex; align-items: center; min-height: 26px; padding: 4px 9px; border-radius: 999px; font-size: 11px; font-weight: 800; white-space: nowrap; }
+      .badge.blue { color: #1849a9; background: var(--brand-soft); }
+      .badge.green { color: var(--green); background: var(--green-soft); }
+      .badge.amber { color: var(--amber); background: var(--amber-soft); }
+      .badge.gray { color: #475467; background: #eef2f7; }
+      .route { margin: 12px 0 4px; font-size: 19px; font-weight: 800; letter-spacing: -.02em; }
+      .meta { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+      .flight { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; margin-top: 14px; padding: 11px 12px; border: 1px solid #c9d8fb; border-radius: 14px; background: #f6f8ff; }
+      .flight strong { display: block; font-size: 13px; }
+      .flight small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
+      .delay { color: var(--amber); font-size: 12px; font-weight: 800; text-align: right; }
+      .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 14px; }
+      .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 13px; color: #344054; background: #fff; font-size: 14px; font-weight: 800; cursor: pointer; }
+      .btn:hover { background: #f8fafc; }
+      .btn.primary { border-color: var(--brand); color: #fff; background: var(--brand); }
+      .btn.primary:hover { background: var(--brand-strong); }
+      .btn.success { border-color: #079455; color: #fff; background: #079455; }
+      .btn.danger { border-color: #fecdca; color: var(--red); background: var(--red-soft); }
+      .btn.ghost { border-color: transparent; background: transparent; }
+      .btn:disabled { opacity: .5; cursor: not-allowed; }
+      .primary-action { width: 100%; min-height: 58px; border: 0; border-radius: 0 0 18px 18px; color: #fff; background: linear-gradient(135deg, #c25f0c, #df7c17); font-size: 16px; font-weight: 850; cursor: pointer; }
+      .primary-action.done { background: linear-gradient(135deg, #067647, #12a166); }
+      .alert { display: flex; align-items: flex-start; gap: 11px; padding: 13px 14px; border: 1px solid #fedf89; border-radius: 15px; color: #7a2e0e; background: #fffaeb; }
+      .alert strong { display: block; margin-bottom: 2px; font-size: 13px; }
+      .alert p { margin: 0; font-size: 12px; line-height: 1.45; }
+      .alert .section-link { margin-left: auto; color: #93370d; }
+      .day-strip { display: grid; grid-template-columns: repeat(7,1fr); gap: 5px; padding: 7px; border: 1px solid var(--line); border-radius: 17px; background: #fff; }
+      .day { min-height: 58px; padding: 6px 2px; border: 0; border-radius: 12px; color: #667085; background: transparent; cursor: pointer; }
+      .day span { display: block; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+      .day strong { display: block; margin-top: 5px; font-size: 15px; }
+      .day.active { color: #1849a9; background: var(--brand-soft); }
+      .day .dot { width: 5px; height: 5px; margin: 4px auto 0; border-radius: 50%; background: var(--brand); }
+      .trip-list { overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: #fff; }
+      .trip-row { display: grid; grid-template-columns: 54px 1fr auto; align-items: center; gap: 10px; width: 100%; min-height: 84px; padding: 12px 14px; border: 0; border-bottom: 1px solid var(--line); background: transparent; text-align: left; cursor: pointer; }
+      .trip-row:last-child { border-bottom: 0; }
+      .trip-row:hover { background: #f8faff; }
+      .trip-time { font-weight: 850; font-variant-numeric: tabular-nums; }
+      .trip-main { min-width: 0; }
+      .trip-label { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+      .trip-route { overflow: hidden; font-size: 14px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+      .trip-meta { overflow: hidden; margin-top: 4px; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+      .chevron { color: #98a2b3; }
+      .toolbar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+      .filter { flex: 0 0 auto; min-height: 40px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; color: #475467; background: #fff; font-size: 12px; font-weight: 750; cursor: pointer; }
+      .filter.active { border-color: #84aefb; color: #1849a9; background: var(--brand-soft); }
+      .disclosure { overflow: hidden; margin-bottom: 10px; border: 1px solid var(--line); border-radius: 17px; background: #fff; }
+      .disclosure-head { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 10px; width: 100%; min-height: 66px; padding: 12px 14px; border: 0; background: transparent; text-align: left; cursor: pointer; }
+      .disclosure-head strong { display: block; font-size: 14px; }
+      .disclosure-head small { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
+      .amount { font-size: 14px; font-weight: 850; font-variant-numeric: tabular-nums; white-space: nowrap; }
+      .disclosure-body { padding: 0 14px 14px; border-top: 1px solid #edf0f5; }
+      .description-list { margin: 0; }
+      .description-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 11px 0; border-bottom: 1px solid #edf0f5; }
+      .description-row:last-child { border-bottom: 0; }
+      .description-row dt { color: var(--muted); font-size: 12px; }
+      .description-row dd { margin: 0; font-size: 12px; font-weight: 750; text-align: right; }
+      .counter { display: inline-grid; grid-template-columns: 42px minmax(44px,auto) 42px; align-items: center; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; }
+      .counter button { min-height: 42px; border: 0; color: var(--brand); background: #f6f8fc; font-size: 18px; cursor: pointer; }
+      .counter strong { padding: 0 10px; text-align: center; font-variant-numeric: tabular-nums; }
+      .form-grid { display: grid; gap: 12px; margin-top: 12px; }
+      label { display: grid; gap: 6px; color: #475467; font-size: 12px; font-weight: 750; }
+      input, select, textarea { width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid #cfd8e6; border-radius: 12px; color: var(--ink); background: #fff; font-size: 16px; }
+      textarea { min-height: 88px; resize: vertical; }
+      .summary { overflow: hidden; border: 1px solid #bad7c7; border-radius: 18px; background: #f3fcf7; }
+      .summary-row { display: flex; justify-content: space-between; gap: 12px; padding: 12px 14px; border-bottom: 1px solid #d7ecdf; font-size: 13px; }
+      .summary-row:last-child { border-bottom: 0; }
+      .summary-row.total { color: var(--green); font-size: 16px; font-weight: 850; }
+      .vehicle-selector { display: grid; grid-template-columns: 46px 1fr auto; align-items: center; gap: 10px; padding: 14px; }
+      .vehicle-icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; color: var(--brand); background: var(--brand-soft); }
+      .vehicle-selector select { min-height: 40px; padding: 7px 34px 7px 9px; border-color: transparent; background-color: transparent; font-size: 14px; font-weight: 800; }
+      .progress { height: 8px; overflow: hidden; border-radius: 99px; background: #e9eef5; }
+      .progress > span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#155eef,#53b1fd); }
+      .issue { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: start; padding: 14px; border-bottom: 1px solid var(--line); }
+      .issue:last-child { border-bottom: 0; }
+      .issue-icon { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: var(--amber-soft); }
+      .issue strong { display: block; font-size: 13px; }
+      .issue p { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
+      .message { display: grid; grid-template-columns: auto 1fr auto; gap: 11px; width: 100%; min-height: 88px; padding: 14px; border: 0; border-bottom: 1px solid var(--line); background: #fff; text-align: left; cursor: pointer; }
+      .message:last-child { border-bottom: 0; }
+      .message.unread { background: #f5f8ff; }
+      .avatar { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; color: #1849a9; background: #dbe7ff; font-size: 12px; font-weight: 850; }
+      .message strong { display: block; font-size: 13px; }
+      .message p { display: -webkit-box; overflow: hidden; margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.4; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+      .unread-dot { width: 9px; height: 9px; margin-top: 7px; border-radius: 50%; background: var(--brand); }
+      .empty { padding: 28px 18px; text-align: center; }
+      .empty-icon { display: grid; place-items: center; width: 52px; height: 52px; margin: 0 auto 12px; border-radius: 50%; color: var(--brand); background: var(--brand-soft); }
+      .empty strong { display: block; }
+      .empty p { margin: 6px 0 0; color: var(--muted); font-size: 12px; }
+      .bottom-nav { position: fixed; z-index: 25; right: 0; bottom: 0; left: 0; display: grid; grid-template-columns: repeat(5,1fr); width: min(100%,720px); min-height: 76px; margin: 0 auto; padding: 8px max(8px, env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left)); border-top: 1px solid var(--line); background: rgba(255,255,255,.96); backdrop-filter: blur(14px); box-shadow: 0 -8px 24px rgba(16,24,40,.08); }
+      .nav-item { position: relative; display: grid; justify-items: center; align-content: center; gap: 4px; min-height: 56px; border: 0; border-radius: 12px; color: #667085; background: transparent; font-size: 10px; font-weight: 750; cursor: pointer; }
+      .nav-item.active { color: var(--brand); background: var(--brand-soft); }
+      .nav-badge { position: absolute; top: 3px; left: calc(50% + 8px); display: grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border: 2px solid #fff; border-radius: 99px; color: #fff; background: var(--red); font-size: 9px; }
+      .overlay { position: fixed; z-index: 80; inset: 0; display: flex; align-items: flex-end; justify-content: center; padding: 16px 16px max(16px,env(safe-area-inset-bottom)); background: rgba(15,23,42,.5); backdrop-filter: blur(4px); }
+      .sheet { width: min(100%, 620px); max-height: min(88dvh,800px); overflow: auto; border-radius: 24px; background: #fff; box-shadow: var(--shadow-lg); animation: rise .2s ease-out; }
+      @keyframes rise { from { transform: translateY(18px); opacity: .5; } }
+      .sheet-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 66px; padding: 14px 16px; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.97); }
+      .sheet-head::before { position: absolute; top: 7px; left: calc(50% - 20px); width: 40px; height: 4px; border-radius: 99px; background: #d7deea; content: ""; }
+      .sheet-head h2 { margin: 7px 0 0; font-size: 16px; }
+      .sheet-body { padding: 16px; }
+      .close { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 12px; color: #667085; background: #fff; cursor: pointer; }
+      .passenger { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 11px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+      .passenger:last-child { border-bottom: 0; }
+      .passenger strong { display: block; font-size: 13px; }
+      .passenger small { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
+      .toast { position: fixed; z-index: 120; right: 16px; bottom: 92px; left: 16px; width: min(calc(100% - 32px), 600px); margin: 0 auto; padding: 13px 15px; border-radius: 14px; color: #fff; background: #101828; box-shadow: var(--shadow-lg); font-size: 13px; font-weight: 750; animation: rise .2s ease-out; }
+      .hidden { display: none !important; }
+      .spacer { height: 6px; }
+      @media (min-width: 721px) {
+        .app { border-right: 1px solid #d8e0eb; border-left: 1px solid #d8e0eb; }
+        .content { padding: 22px 24px 110px; }
+        .overlay { align-items: center; }
+        .sheet { border-radius: 24px; }
+      }
+      @media (max-width: 380px) {
+        .content { padding-right: 12px; padding-left: 12px; }
+        .hero-body { padding: 15px; }
+        .time { font-size: 30px; }
+        .button-row { grid-template-columns: 1fr; }
+        .trip-row { grid-template-columns: 47px 1fr auto; padding-right: 10px; padding-left: 10px; }
+        .nav-item { font-size: 9px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app" class="app"></div>
+    <div id="modal-root"></div>
+    <div id="toast-root" aria-live="polite"></div>
+    <script>
+      const SEED = {
+        driver: { name: 'László', initials: 'PL', phone: '+36 30 555 0190' },
+        date: '2026. augusztus 31., hétfő',
+        vehicle: { id: 'v1', plate: 'RTA-412', model: 'Mercedes-Benz Vito', seats: 8, fuel: 68, odometer: 184260, webfleet: 'Kapcsolódva · 2 perce' },
+        trips: [
+          { id:'t1', time:'08:20', type:'airport', label:'Reptéri transzfer', from:'Liszt Ferenc Repülőtér · 2A', to:'Budapest · Hotel Clark', count:2, contact:'Teszt Elek', phone:'+36 30 123 4567', amount:45000, payment:'Készpénz', flight:'W62472 · London Luton', flightState:'35 perc késés', status:'assigned', passengers:[{name:'Teszt Elek',phone:'+36 30 123 4567',note:'Kapcsolattartó'},{name:'Kiss Anna',phone:'+36 20 777 2211',note:'2 db nagy bőrönd'}] },
+          { id:'t2', time:'11:30', type:'carpool', label:'Telekocsi', from:'Keleti pu.', to:'Nyíregyháza', count:6, amount:36000, payment:'5×6000 Ft KP · 1×6000 Ft kártya', status:'later', passengerData:'confirmed' },
+          { id:'t3', time:'16:15', type:'business', label:'Üzleti transzfer', from:'Nyíregyháza · LEGO', to:'Debrecen Airport', count:2, contact:'Nagy Júlia', phone:'+36 70 882 1144', amount:32000, payment:'Átutalás', flight:'LH1687 · München', flightState:'Menetrend szerint', status:'later', passengers:[{name:'Nagy Júlia',phone:'+36 70 882 1144',note:'Kapcsolattartó'},{name:'John Miller',phone:'+44 7700 900321',note:'Angol nyelv'}] },
+          { id:'t4', time:'20:40', type:'carpool', label:'Telekocsi', from:'Nyíregyháza', to:'Keleti pu.', count:null, amount:0, payment:'Indulás előtt rögzítendő', status:'later', passengerData:'missing' }
+        ],
+        costs: [
+          { id:'c1', type:'Parkolás', amount:4200, note:'Repülőtér Terminál parkoló' },
+          { id:'c2', type:'Mosás', amount:3500, note:'Külső-belső mosás' }
+        ],
+        packageIncome: 12000,
+        messages: [
+          { id:'m1', from:'Diszpécser · Kata', title:'A délutáni felvétel pontosítva', body:'A LEGO főbejárat helyett a déli vendégparkolóhoz menj. Az utas telefonszáma változatlan.', time:'07:42', unread:true, kind:'schedule' },
+          { id:'m2', from:'Pénzügy · Gábor', title:'Augusztus 29. elszámolás jóváhagyva', body:'A napi jelentést ellenőriztük, az 52 000 Ft készpénz és a két költség elfogadva.', time:'Tegnap', unread:true, kind:'money' },
+          { id:'m3', from:'Rendszer', title:'Járműellenőrzés esedékes', body:'Indulás előtt ellenőrizd a RTA-412 folyadékszintjeit és a jobb hátsó gumi állapotát.', time:'Tegnap', unread:false, kind:'vehicle' },
+          { id:'m4', from:'Iroda', title:'Szeptemberi beosztás közzétéve', body:'A következő heti beosztás elérhető. Kérjük, jelezd, ha eltérést találsz.', time:'Aug. 28.', unread:false, kind:'schedule' }
+        ],
+        issues: [
+          { id:'i1', title:'Jobb hátsó gumi lassan ereszt', meta:'Közepes · Bejelentve aug. 30.', state:'Vizsgálat alatt' },
+          { id:'i2', title:'Bal tolóajtó nehezen záródik', meta:'Alacsony · Bejelentve aug. 27.', state:'Szervizre vár' }
+        ],
+        history: [
+          { day:'Aug. 30.', status:'Beküldve', total:0 },
+          { day:'Aug. 29.', status:'Jóváhagyva', total:52000 },
+          { day:'Aug. 28.', status:'Jóváhagyva', total:41000 },
+          { day:'Aug. 27.', status:'Jóváhagyva', total:6000 }
+        ]
+      };
 
-    if (canDrag) {
-      chip.addEventListener('dragstart', (e) => {
-        e.dataTransfer.setData('text/plain', 'subject:' + sub.id);
-        e.dataTransfer.effectAllowed = 'move';
-        chip.classList.add('dragging');
-      });
-      chip.addEventListener('dragend', () => chip.classList.remove('dragging'));
-    }
+      const initialState = {
+        tab: 'today', modal: null, openReports: ['t1'], reportStatus: 'draft',
+        tripStatus: { t1:'assigned', t2:'later', t3:'later', t4:'later' },
+        carpoolCounts: { t2:6, t4:null }, costs: SEED.costs, packageIncome: SEED.packageIncome,
+        messages: SEED.messages, issues: SEED.issues, vehicleId:'v1', toast:'', reminderDismissed:false,
+        note:'A délutáni járat utasai 10 perccel korábban érkeztek.'
+      };
 
-    list.appendChild(chip);
-  });
-}
+      function clone(value) { return JSON.parse(JSON.stringify(value)); }
+      function loadState() {
+        try { return { ...clone(initialState), ...JSON.parse(localStorage.getItem('driver-demo-v1') || '{}') }; }
+        catch { return clone(initialState); }
+      }
+      let state = loadState();
+      let toastTimer;
+      const app = document.getElementById('app');
+      const modalRoot = document.getElementById('modal-root');
+      const toastRoot = document.getElementById('toast-root');
 
-function renderPlan() {
-  const grid = document.getElementById('planGrid');
-  const count = document.getElementById('dayCount');
-  const days = EXAM_DAYS;
-  count.textContent = days.length;
+      const icons = {
+        today:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z"/><path d="m9 15 2 2 4-5"/></svg>',
+        report:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v5h5M10 13h5M10 17h5"/></svg>',
+        vehicle:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="m4 16 1-6 2-3h10l2 3 1 6v3h-2v-2H6v2H4z"/><circle cx="8" cy="14" r="1"/><circle cx="16" cy="14" r="1"/><path d="M6 10h12"/></svg>',
+        money:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 6h18v13H3z"/><path d="M16 10h5v5h-5a2.5 2.5 0 0 1 0-5ZM7 10h4"/></svg>',
+        inbox:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 4h16v16H4z"/><path d="m4 6 8 7 8-7"/></svg>',
+        bell:'<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>',
+        more:'<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>',
+        chevron:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>',
+        close:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 6 12 12M18 6 6 18"/></svg>',
+        phone:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2.1Z"/></svg>',
+        map:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-5 7-12a7 7 0 1 0-14 0c0 7 7 12 7 12Z"/><circle cx="12" cy="9" r="2"/></svg>',
+        alert:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 2 21h20L12 3Z"/><path d="M12 9v5M12 18h.01"/></svg>'
+      };
 
-  grid.innerHTML = '';
-  days.forEach(dateStr => {
-    // Minden próbálkozás ezen a napon, a tárgyával együtt
-    const items = [];
-    state.subjects.forEach(sub => {
-      sub.attempts.forEach(att => {
-        if (att.date === dateStr) items.push({ subject: sub, attempt: att });
-      });
-    });
-    items.sort((a, b) => (a.attempt.time || '').localeCompare(b.attempt.time || ''));
+      function huf(value) { return new Intl.NumberFormat('hu-HU').format(value) + ' Ft'; }
+      function unreadCount() { return state.messages.filter(m => m.unread).length; }
+      function trip(id) { return SEED.trips.find(item => item.id === id); }
+      function countFor(item) { return item.type === 'carpool' ? state.carpoolCounts[item.id] : item.count; }
+      function tripAmount(item) {
+        const count = countFor(item);
+        return item.type === 'carpool' ? (count || 0) * 6000 : item.amount;
+      }
+      function grossTotal() { return SEED.trips.reduce((sum,item) => sum + tripAmount(item), 0) + state.packageIncome; }
+      function costTotal() { return state.costs.reduce((sum,item) => sum + Number(item.amount || 0), 0); }
+      function cashTotal() { return 45000 + ((state.carpoolCounts.t2 || 0) - 1) * 6000 + state.packageIncome; }
+      function statusLabel(id) {
+        return ({assigned:'Következő',to_pickup:'Úton a felvételhez',arrived:'Megérkezett',onboard:'Utas felvéve',completed:'Lezárva',later:'Később'})[state.tripStatus[id]] || 'Később';
+      }
+      function statusButton(id) {
+        const value = state.tripStatus[id];
+        return ({assigned:'Elindultam a felvételi címre',to_pickup:'Megérkeztem',arrived:'Utas felvéve',onboard:'Fuvar lezárása',completed:'Fuvar lezárva'})[value] || 'Fuvar megnyitása';
+      }
+      function badgeFor(item) { return item.type === 'carpool' ? 'blue' : item.type === 'airport' ? 'amber' : 'gray'; }
+      function save() { localStorage.setItem('driver-demo-v1', JSON.stringify(state)); }
+      function showToast(message) {
+        state.toast = message; renderToast(); clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { state.toast=''; renderToast(); }, 2800);
+      }
+      function renderToast() { toastRoot.innerHTML = state.toast ? `<div class="toast">${state.toast}</div>` : ''; }
 
-    const card = document.createElement('div');
-    card.className = 'day-card' + (items.length ? ' has-items' : '');
-    card.dataset.date = dateStr;
-
-    const dow = dayOfWeek(dateStr);
-    const isWeekend = dow === 0 || dow === 6;
-
-    card.innerHTML = `
-      <div class="day-head">
-        <div class="date">${formatDateHu(dateStr)}</div>
-        <div class="dow ${isWeekend ? 'weekend' : ''}">${DOW_HU[dow]}</div>
-      </div>
-      <div class="day-items"></div>
-    `;
-
-    const itemsBox = card.querySelector('.day-items');
-    if (items.length === 0) {
-      itemsBox.innerHTML = '<div class="day-empty">Húzz ide tárgyat</div>';
-    } else {
-      items.forEach(({ subject, attempt }) => {
-        const el = document.createElement('div');
-        el.className = `scheduled-item att-${attempt.status}`;
-        el.dataset.attemptId = attempt.id;
-
-        // Csak még le nem zárt (pending) alkalom mozgatható
-        const canMove = attempt.status === 'pending';
-        if (canMove) el.draggable = true;
-
-        const actionBtns = attempt.status === 'pending'
-          ? `<button class="mark-pass" title="Sikerült">✓</button>
-             <button class="mark-fail" title="Nem sikerült">✗</button>`
-          : `<button class="undo" title="Visszavonás">↶</button>`;
-
-        el.innerHTML = `
-          <div class="si-main">
-            ${canMove ? '<span class="si-grip" title="Húzd másik napra">⋮⋮</span>' : ''}
-            <span class="time">${attempt.time || '—'}</span>
-            <span class="subj"></span>
-          </div>
-          <div class="si-actions">${actionBtns}</div>
-        `;
-        el.querySelector('.subj').textContent = subject.name;
-
-        // Drag: aktív alkalom másik napra húzása
-        if (canMove) {
-          el.addEventListener('dragstart', (ev) => {
-            ev.dataTransfer.setData('text/plain', 'attempt:' + attempt.id);
-            ev.dataTransfer.effectAllowed = 'move';
-            el.classList.add('dragging');
-            ev.stopPropagation();
-          });
-          el.addEventListener('dragend', () => el.classList.remove('dragging'));
-        }
-
-        // Sikerült
-        const pb = el.querySelector('.mark-pass');
-        if (pb) pb.addEventListener('click', (e) => {
-          e.stopPropagation();
-          attempt.status = 'passed';
-          subject.done = true;
-          saveLocal(); render();
-          toast(`${subject.name}: sikerült ✓`);
-        });
-
-        // Nem sikerült
-        const fb = el.querySelector('.mark-fail');
-        if (fb) fb.addEventListener('click', (e) => {
-          e.stopPropagation();
-          attempt.status = 'failed';
-          saveLocal(); render();
-          const remaining = MAX_ATTEMPTS - subject.attempts.length;
-          if (remaining <= 0) {
-            toast(`${subject.name}: 3/3 — elfogytak a lehetőségek`);
-          } else {
-            toast(`${subject.name}: új alkalom felvehető (${remaining} maradt)`);
-          }
-        });
-
-        // Visszavonás (passed/failed -> pending)
-        const ub = el.querySelector('.undo');
-        if (ub) ub.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if (attempt.status === 'passed') subject.done = false;
-          attempt.status = 'pending';
-          saveLocal(); render();
-        });
-
-        itemsBox.appendChild(el);
-      });
-    }
-
-    // Drop target: elfogad új tárgyat (subject:) VAGY meglévő alkalmat (attempt:)
-    card.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      card.classList.add('drop-hover');
-    });
-    card.addEventListener('dragleave', () => card.classList.remove('drop-hover'));
-    card.addEventListener('drop', (e) => {
-      e.preventDefault();
-      card.classList.remove('drop-hover');
-      const data = e.dataTransfer.getData('text/plain');
-
-      // === ESET 1: új tárgy behúzása a bal oldali listából ===
-      if (data.startsWith('subject:')) {
-        const subId = data.slice('subject:'.length);
-        const sub = state.subjects.find(s => s.id === subId);
-        if (!sub) return;
-
-        const status = subjectStatus(sub);
-        if (status !== 'free') {
-          if (status === 'done') toast('Ez a tárgy már teljesítve van.');
-          else if (status === 'scheduled') toast('Már be van ütemezve — zárd le előbb (✓ vagy ✗).');
-          else if (status === 'failed_out') toast('Elfogytak a próbálkozások (3/3).');
-          return;
-        }
-
-        sub.attempts.push({
-          id: uid(),
-          date: dateStr,
-          time: sub.defaultTime || '10:00',
-          status: 'pending'
-        });
-        saveLocal();
-        render();
-        toast(`${sub.name} betervezve: ${formatDateHu(dateStr)}`);
-        return;
+      function header(title, subtitle) {
+        return `<div class="demo-banner">● SZIMULÁLT DEMÓ · NINCS ADATBÁZIS-KAPCSOLAT</div>
+          <header class="appbar">
+            <div><p class="brandline">Pethő Travel</p><h1>${title}</h1><p class="date">${subtitle}</p></div>
+            <div class="header-actions">
+              <button class="icon-button" data-action="tab" data-tab="inbox" aria-label="Üzenetek">${icons.bell}</button>
+              <button class="icon-button" data-action="open-modal" data-modal="demo" aria-label="Demó beállítások">${icons.more}</button>
+            </div>
+          </header>`;
       }
 
-      // === ESET 2: meglévő aktív alkalom áthelyezése másik napra ===
-      if (data.startsWith('attempt:')) {
-        const attId = data.slice('attempt:'.length);
-        const sub = findSubjectByAttempt(attId);
-        if (!sub) return;
-        const att = sub.attempts.find(a => a.id === attId);
-        if (!att) return;
-
-        // Csak még nem lezárt alkalom mozdítható
-        if (att.status !== 'pending') {
-          toast('A lezárt alkalom nem mozgatható. Vond vissza (↶) előbb.');
-          return;
-        }
-
-        // Nincs változás, ha ugyanarra a napra húzzák
-        if (att.date === dateStr) return;
-
-        att.date = dateStr;
-        saveLocal();
-        render();
-        toast(`${sub.name} áthelyezve: ${formatDateHu(dateStr)}`);
+      function nav() {
+        const items = [['today','Ma'],['report','Menetlevél'],['vehicle','Jármű'],['money','Pénz'],['inbox','Üzenetek']];
+        return `<nav class="bottom-nav" aria-label="Fő navigáció">${items.map(([id,label]) => `<button class="nav-item ${state.tab===id?'active':''}" data-action="tab" data-tab="${id}">${icons[id]}<span>${label}</span>${id==='inbox'&&unreadCount()?`<span class="nav-badge">${unreadCount()}</span>`:''}</button>`).join('')}</nav>`;
       }
-    });
 
-    grid.appendChild(card);
-  });
-}
-
-// ============ ACTIONS ============
-function addSubject() {
-  const name = document.getElementById('newSubject').value.trim();
-  const time = document.getElementById('newTime').value || '10:00';
-  if (!name) { toast('Adj meg tárgynevet'); return; }
-
-  // Ne engedjünk duplikált nevet
-  if (state.subjects.some(s => s.name.toLowerCase() === name.toLowerCase())) {
-    toast('Ez a tárgy már szerepel');
-    return;
-  }
-
-  state.subjects.push({
-    id: uid(),
-    name,
-    defaultTime: time,
-    attempts: [],
-    done: false
-  });
-  document.getElementById('newSubject').value = '';
-  document.getElementById('newSubject').focus();
-  saveLocal();
-  render();
-  toast('Felvéve: ' + name);
-}
-
-function exportTxt() {
-  if (state.subjects.length === 0) { toast('Nincs mit exportálni'); return; }
-
-  const lines = [];
-  lines.push('VIZSGATERV');
-  lines.push('==========');
-  lines.push('');
-  lines.push('Név: ' + (state.user || '—'));
-  lines.push('Exportálva: ' + new Date().toLocaleString('hu-HU'));
-  lines.push('');
-
-  // Naptár szerint: minden nap, alatta a betervezett próbálkozások
-  lines.push('NAPOK SZERINT');
-  lines.push('-------------');
-  EXAM_DAYS.forEach(day => {
-    const dayItems = [];
-    state.subjects.forEach(sub => {
-      sub.attempts.forEach(att => {
-        if (att.date === day) {
-          dayItems.push({
-            time: att.time,
-            name: sub.name,
-            status: att.status
-          });
-        }
-      });
-    });
-    dayItems.sort((a, b) => (a.time || '').localeCompare(b.time || ''));
-
-    const dow = DOW_HU[dayOfWeek(day)];
-    lines.push('');
-    lines.push(`${formatDateHu(day)} (${dow}) — ${day}`);
-    if (dayItems.length === 0) {
-      lines.push('  (nincs vizsga)');
-    } else {
-      dayItems.forEach(it => {
-        const mark = it.status === 'passed' ? '✓' : it.status === 'failed' ? '✗' : '·';
-        lines.push(`  ${mark} ${it.time || '—'}   ${it.name}`);
-      });
-    }
-  });
-
-  lines.push('');
-  lines.push('TÁRGYAK ÁLLAPOTA');
-  lines.push('----------------');
-  state.subjects.forEach(sub => {
-    const status = subjectStatus(sub);
-    const stLabel = status === 'done' ? 'TELJESÍTVE'
-      : status === 'failed_out' ? 'ELBUKVA'
-      : status === 'scheduled' ? 'BEÜTEMEZVE'
-      : 'VÁRAKOZIK';
-    lines.push('');
-    lines.push(`${sub.name}  [${stLabel}]  (${sub.attempts.length}/${MAX_ATTEMPTS})`);
-    if (sub.attempts.length === 0) {
-      lines.push('  (még nincs próbálkozás)');
-    } else {
-      sub.attempts
-        .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))
-        .forEach((att, i) => {
-          const mark = att.status === 'passed' ? '✓ sikerült'
-            : att.status === 'failed' ? '✗ nem sikerült'
-            : '· aktív';
-          lines.push(`  ${i + 1}. ${formatDateHu(att.date)} ${att.time} — ${mark}`);
-        });
-    }
-  });
-
-  lines.push('');
-  lines.push('---');
-  const done = state.subjects.filter(s => s.done).length;
-  const total = state.subjects.length;
-  lines.push(`Teljesítve: ${done}/${total}`);
-
-  const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `vizsgaterv_${(state.user || 'export').replace(/\s+/g,'_')}_${todayStr()}.txt`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  toast('Exportálva');
-}
-
-function copyShareLink() {
-  updateUrl();
-  const url = window.location.href;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(
-      () => toast('Link a vágólapon'),
-      () => fallbackCopy(url)
-    );
-  } else {
-    fallbackCopy(url);
-  }
-}
-function fallbackCopy(txt) {
-  const ta = document.createElement('textarea');
-  ta.value = txt; document.body.appendChild(ta); ta.select();
-  try { document.execCommand('copy'); toast('Link a vágólapon'); }
-  catch(e) { toast('Másold kézzel a címsorból'); }
-  document.body.removeChild(ta);
-}
-
-// ============ USER FLOW ============
-function showNameModal(prefill) {
-  const m = document.getElementById('nameModal');
-  m.classList.add('show');
-  const input = document.getElementById('nameInput');
-  input.value = prefill || '';
-  setTimeout(() => input.focus(), 50);
-}
-
-function hideNameModal() {
-  document.getElementById('nameModal').classList.remove('show');
-}
-
-function submitName() {
-  const name = document.getElementById('nameInput').value.trim();
-  if (!name) { toast('Adj meg egy nevet'); return; }
-
-  // Switching users: try to load their local data first
-  if (state.user !== name) {
-    const local = loadLocal(name);
-    if (local) {
-      state.user = name;
-      state.subjects = local.subjects || [];
-    } else {
-      state.user = name;
-      state.subjects = [];
-    }
-  }
-
-  seedPresets();
-  saveLocal();
-  hideNameModal();
-  render();
-}
-
-// ============ INIT ============
-// Betölti az előre definiált tárgyakat, ha még nincsenek a user listájában (név alapján)
-function seedPresets() {
-  PRESET_SUBJECTS.forEach(preset => {
-    const exists = state.subjects.some(s => s.name.toLowerCase() === preset.name.toLowerCase());
-    if (!exists) {
-      state.subjects.push({
-        id: uid(),
-        name: preset.name,
-        defaultTime: preset.defaultTime || '10:00',
-        attempts: [],
-        done: false
-      });
-    }
-  });
-}
-
-function init() {
-  // 1. Try loading from URL
-  const fromUrl = loadFromUrl();
-  if (fromUrl && fromUrl.user) {
-    state.user = fromUrl.user;
-    state.subjects = fromUrl.subjects;
-    seedPresets();
-    saveLocal();
-  } else {
-    // 2. Try last user from localStorage
-    const lastUser = localStorage.getItem(STORAGE_KEY + ':lastUser');
-    if (lastUser) {
-      const local = loadLocal(lastUser);
-      if (local) {
-        state.user = lastUser;
-        state.subjects = local.subjects || [];
-        seedPresets();
-        saveLocal();
+      function todayView() {
+        const current = trip('t1');
+        const currentState = state.tripStatus.t1;
+        return `${header(`Szia, ${SEED.driver.name}!`, SEED.date)}<main class="content">
+          <section class="grid-2">
+            <div class="stat"><span class="stat-label">Készpénz ma</span><strong>${huf(cashTotal())}</strong></div>
+            <div class="stat"><span class="stat-label">Csomagpénz</span><strong>${huf(state.packageIncome)}</strong></div>
+          </section>
+          ${!state.reminderDismissed && currentState==='assigned' ? `<section class="section"><div class="alert">${icons.alert}<div><strong>Indulási visszajelzés szükséges</strong><p>A transzfer 45 percen belül kezdődik. Ha már elindultál, jelezd most.</p></div><button class="section-link" data-action="dismiss-reminder">Rendben</button></div></section>` : ''}
+          <section class="section"><div class="section-head"><h2>Aktuális út</h2><span class="badge green">● online</span></div>
+            <article class="card hero">
+              <div class="hero-body">
+                <div class="hero-top"><div><div class="time">${current.time}</div><div class="trip-label"><span class="badge ${badgeFor(current)}">${current.label}</span><span class="badge gray">${statusLabel('t1')}</span></div></div><span class="badge blue">${SEED.vehicle.plate}</span></div>
+                <p class="route">${current.from} → ${current.to}</p><p class="meta">${current.count} utas · ${current.contact} · ${current.payment}</p>
+                <div class="flight"><span>✈</span><div><strong>${current.flight}</strong><small>Érkezés 08:05 helyett 08:40</small></div><span class="delay">${current.flightState}</span></div>
+                <div class="button-row"><button class="btn" data-action="simulate" data-message="Navigáció megnyitva a felvételi címhez">${icons.map} Navigáció</button><button class="btn" data-action="open-trip" data-id="t1">Utaslista és részletek</button></div>
+              </div>
+              <button class="primary-action ${currentState==='completed'?'done':''}" data-action="advance-trip" data-id="t1" ${currentState==='completed'?'disabled':''}>${statusButton('t1')}</button>
+            </article>
+          </section>
+          <section class="section"><div class="section-head"><h2>Heti terv</h2><button class="section-link" data-action="simulate" data-message="A teljes heti nézet megnyitva">Teljes hét →</button></div>
+            <div class="day-strip">${[['H',31],['K',1],['Sze',2],['Cs',3],['P',4],['Szo',5],['V',6]].map(([d,n],i)=>`<button class="day ${i===0?'active':''}" data-action="day"><span>${d}</span><strong>${n}</strong>${i<5?'<i class="dot"></i>':''}</button>`).join('')}</div>
+          </section>
+          <section class="section"><div class="section-head"><h2>Mai napod</h2><span class="badge gray">4 út</span></div>
+            <div class="trip-list">${SEED.trips.slice(1).map(tripRow).join('')}</div>
+          </section>
+        </main>${nav()}`;
       }
-    }
-  }
 
-  if (!state.user) {
-    showNameModal();
-  }
+      function tripRow(item) {
+        const count = countFor(item);
+        const meta = item.type === 'carpool'
+          ? `${count===null?'Utaslétszám: nincs adat':count+' fő'} · ${count===null?'indulás előtt rögzítendő':huf(tripAmount(item))}`
+          : `${item.count} utas · ${item.contact}`;
+        return `<button class="trip-row" data-action="open-trip" data-id="${item.id}"><span class="trip-time">${item.time}</span><span class="trip-main"><span class="trip-label"><span class="badge ${badgeFor(item)}">${item.label}</span></span><span class="trip-route">${item.from} → ${item.to}</span><span class="trip-meta">${meta}</span></span><span class="chevron">${icons.chevron}</span></button>`;
+      }
 
-  render();
+      function reportView() {
+        return `${header('Napi menetlevél', '2026. augusztus 31. · automatikusan előkészítve')}<main class="content">
+          <section class="grid-2"><div class="stat"><span class="stat-label">Fuvarbevétel</span><strong>${huf(grossTotal()-state.packageIncome)}</strong></div><div class="stat"><span class="stat-label">Költségek</span><strong>${huf(costTotal())}</strong></div></section>
+          <section class="section"><div class="section-head"><h2>Fuvarok a beosztásból</h2><span class="badge ${state.reportStatus==='submitted'?'green':'amber'}">${state.reportStatus==='submitted'?'Beküldve':'Piszkozat'}</span></div>
+            ${SEED.trips.map(reportDisclosure).join('')}
+            <div class="button-row"><button class="btn" data-action="open-modal" data-modal="add-trip">+ Fuvar</button><button class="btn" data-action="simulate" data-message="Üres menet hozzáadva">+ Üres menet</button></div>
+          </section>
+          <section class="section"><div class="section-head"><h2>Csomagpénz</h2><button class="section-link" data-action="open-modal" data-modal="package">+ Bevétel</button></div><div class="card"><div class="description-row" style="padding:14px"><dt>Mai átvétel</dt><dd>${huf(state.packageIncome)}</dd></div></div></section>
+          <section class="section"><div class="section-head"><h2>Kiadások</h2><button class="section-link" data-action="open-modal" data-modal="cost">+ Kiadás</button></div><div class="card">${state.costs.length?state.costs.map(c=>`<div class="description-row" style="padding:13px 14px"><dt><strong>${c.type}</strong><br><span class="meta">${c.note}</span></dt><dd>${huf(c.amount)}</dd></div>`).join(''):`<div class="empty"><strong>Nincs rögzített kiadás</strong></div>`}</div></section>
+          <section class="section"><div class="section-head"><h2>Nap típusa és bér</h2></div><div class="card" style="padding:14px"><div class="description-row"><dt>Nap típusa</dt><dd>Teljes nap · D</dd></div><div class="description-row"><dt>Napi alapbér</dt><dd>${huf(28000)}</dd></div><label style="margin-top:12px">Megjegyzés<textarea data-field="note">${state.note}</textarea></label></div></section>
+          <section class="section"><div class="summary"><div class="summary-row"><span>Összes bevétel</span><strong>${huf(grossTotal())}</strong></div><div class="summary-row"><span>Kiadások</span><strong>− ${huf(costTotal())}</strong></div><div class="summary-row total"><span>Napi elszámolás</span><strong>${huf(grossTotal()-costTotal())}</strong></div></div><button class="btn primary" style="width:100%;margin-top:12px" data-action="submit-report" ${state.reportStatus==='submitted'?'disabled':''}>${state.reportStatus==='submitted'?'Jelentés beküldve':'Jelentés ellenőrzése és beküldése'}</button></section>
+        </main>${nav()}`;
+      }
 
-  // Bind events
-  document.getElementById('addExam').addEventListener('click', addSubject);
-  document.getElementById('newSubject').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') addSubject();
-  });
-  document.getElementById('exportBtn').addEventListener('click', exportTxt);
-  document.getElementById('shareBtn').addEventListener('click', copyShareLink);
-  document.getElementById('switchUser').addEventListener('click', () => showNameModal(''));
-  document.getElementById('nameSubmit').addEventListener('click', submitName);
-  document.getElementById('nameInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') submitName();
-  });
-}
+      function reportDisclosure(item) {
+        const open = state.openReports.includes(item.id);
+        const count = countFor(item);
+        return `<div class="disclosure"><button class="disclosure-head" data-action="toggle-report" data-id="${item.id}"><span><strong>${item.time} · ${item.label}</strong><small>${item.from} → ${item.to}</small></span><span class="amount">${huf(tripAmount(item))}</span><span>${open?'⌃':'⌄'}</span></button>${open?`<div class="disclosure-body">
+          <dl class="description-list"><div class="description-row"><dt>Forrás</dt><dd>Beosztás · felülírható</dd></div><div class="description-row"><dt>Fizetés</dt><dd>${item.payment}</dd></div></dl>
+          ${item.type==='carpool'?`<div class="description-row"><dt><strong>Tényleges utaslétszám</strong><br><span class="meta">Az indulás előtti levél alapján</span></dt><dd><div class="counter"><button data-action="count" data-id="${item.id}" data-delta="-1">−</button><strong>${count===null?'?':count}</strong><button data-action="count" data-id="${item.id}" data-delta="1">+</button></div></dd></div>${count===null?'<div class="alert" style="margin-top:10px">'+icons.alert+'<div><strong>Nincs utasadat</strong><p>Válaszd a 0 főt, ha nem volt utas, vagy add meg manuálisan a létszámot.</p></div></div>':''}`:`<div class="description-row"><dt>Utas / kapcsolattartó</dt><dd>${item.contact}</dd></div>`}
+        </div>`:''}</div>`;
+      }
 
-document.addEventListener('DOMContentLoaded', init);
-</script>
-</body>
+      function vehicleView() {
+        return `${header('Jármű', 'Aktív jármű és hibabejelentés')}<main class="content">
+          <section class="card vehicle-selector"><span class="vehicle-icon">${icons.vehicle}</span><label><span>Mai beosztott jármű</span><select data-field="vehicle"><option value="v1">RTA-412 · Mercedes Vito</option><option value="v2">NMX-608 · Ford Tourneo</option><option value="other">Másik járművet használok…</option></select></label><span class="badge green">aktív</span></section>
+          <section class="section"><div class="grid-2"><div class="stat"><span class="stat-label">Üzemanyag</span><strong>${SEED.vehicle.fuel}%</strong><div class="progress" style="margin-top:10px"><span style="width:${SEED.vehicle.fuel}%"></span></div></div><div class="stat"><span class="stat-label">Kilométeróra</span><strong>${new Intl.NumberFormat('hu-HU').format(SEED.vehicle.odometer)} km</strong></div></div></section>
+          <section class="section"><div class="section-head"><h2>Webfleet kapcsolat</h2><span class="badge green">● online</span></div><div class="card" style="padding:14px"><div class="description-row"><dt>Jármű-hozzárendelés</dt><dd>Beosztásból átvéve</dd></div><div class="description-row"><dt>Utolsó szinkron</dt><dd>${SEED.vehicle.webfleet}</dd></div><p class="meta" style="margin-top:10px">A demó nem küld valódi Webfleet-parancsot. A production integráció külön pilotkapcsolatot igényel.</p></div></section>
+          <section class="section"><div class="section-head"><h2>Nyitott hibák</h2><span class="badge amber">${state.issues.length} tétel</span></div><div class="card">${state.issues.map(issue=>`<div class="issue"><span class="issue-icon">${icons.alert}</span><div><strong>${issue.title}</strong><p>${issue.meta}</p></div><span class="badge amber">${issue.state}</span></div>`).join('')}</div></section>
+          <section class="section"><button class="btn primary" style="width:100%" data-action="open-modal" data-modal="issue">Új járműhiba bejelentése</button><button class="btn" style="width:100%;margin-top:9px" data-action="open-modal" data-modal="unexpected-vehicle">Másik járművet használok</button></section>
+        </main>${nav()}`;
+      }
+
+      function moneyView() {
+        return `${header('Pénzügyi elszámolás', 'Napi bontás és becsült bér')}<main class="content">
+          <section class="grid-2"><div class="stat"><span class="stat-label">Nálad lévő készpénz</span><strong>${huf(cashTotal())}</strong></div><div class="stat"><span class="stat-label">Napi nettó elszámolás</span><strong>${huf(grossTotal()-costTotal())}</strong></div></section>
+          <section class="section"><div class="section-head"><h2>Mai bontás</h2><span class="badge green">egyezik</span></div><div class="card"><div class="description-row" style="padding:13px 14px"><dt>Transzferek</dt><dd>${huf(77000)}</dd></div><div class="description-row" style="padding:13px 14px"><dt>Telekocsik</dt><dd>${huf(tripAmount(trip('t2'))+tripAmount(trip('t4')))}</dd></div><div class="description-row" style="padding:13px 14px"><dt>Csomagpénz</dt><dd>${huf(state.packageIncome)}</dd></div><div class="description-row" style="padding:13px 14px"><dt>Kiadások</dt><dd>− ${huf(costTotal())}</dd></div></div></section>
+          <section class="section"><div class="section-head"><h2>Korábbi napok</h2></div><div class="card">${SEED.history.map(row=>`<div class="description-row" style="padding:13px 14px"><dt><strong>${row.day}</strong><br><span class="badge ${row.status==='Jóváhagyva'?'green':'blue'}" style="margin-top:4px">${row.status}</span></dt><dd>${huf(row.total)}</dd></div>`).join('')}</div></section>
+          <section class="section"><div class="card" style="padding:18px;color:#fff;background:linear-gradient(135deg,#1049a9,#1970f6);border:0"><p class="eyebrow" style="color:#ffd166">Becsült havi bér</p><div style="margin-top:8px;font-size:30px;font-weight:850">214 000 Ft</div><p style="margin:6px 0 0;color:#cfe0ff;font-size:12px">Alapbér + várakozás + jóváhagyott juttatások</p><div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.22);font-size:11px;color:#dbe7ff">Tájékoztató becslés. A végleges összeget az iroda állapítja meg.</div></div></section>
+        </main>${nav()}`;
+      }
+
+      function inboxView() {
+        return `${header('Üzenetek', `${unreadCount()} olvasatlan értesítés`)}<main class="content">
+          <div class="toolbar"><button class="filter active">Összes</button><button class="filter">Beosztás</button><button class="filter">Pénzügy</button><button class="filter">Jármű</button></div>
+          <section class="section"><div class="card" style="overflow:hidden">${state.messages.map(message=>`<button class="message ${message.unread?'unread':''}" data-action="open-message" data-id="${message.id}"><span class="avatar">${message.from.split(' ')[0].slice(0,2).toUpperCase()}</span><span><strong>${message.title}</strong><span class="meta">${message.from} · ${message.time}</span><p>${message.body}</p></span>${message.unread?'<i class="unread-dot"></i>':'<span class="chevron">'+icons.chevron+'</span>'}</button>`).join('')}</div></section>
+        </main>${nav()}`;
+      }
+
+      function render() {
+        app.innerHTML = ({today:todayView,report:reportView,vehicle:vehicleView,money:moneyView,inbox:inboxView})[state.tab]();
+        renderModal(); renderToast(); save();
+      }
+
+      function tripModal(item) {
+        const count = countFor(item);
+        const transfer = item.type !== 'carpool';
+        return sheet(item.label, `<span class="badge ${badgeFor(item)}">${item.time} · ${statusLabel(item.id)}</span><p class="route">${item.from} → ${item.to}</p><p class="meta">${transfer?`${item.count} utas · ${item.contact}`:`${count===null?'Utaslétszám: nincs adat':count+' fő'} · 6000 Ft/fő`}</p>
+          ${transfer?`<div class="flight"><span>✈</span><div><strong>${item.flight||'Nincs járatadat'}</strong><small>${item.type==='airport'?'Élő járatfigyelés mintája':'Üzleti transzfer'}</small></div><span class="delay">${item.flightState||''}</span></div><div class="button-row"><button class="btn" data-action="simulate" data-message="Hívás indítva: ${item.phone}">${icons.phone} ${item.phone}</button><button class="btn" data-action="simulate" data-message="Navigáció megnyitva">${icons.map} Navigáció</button></div><section class="section"><div class="section-head"><h2>Utaslista</h2><span class="badge gray">${item.passengers?.length||0} fő</span></div>${(item.passengers||[]).map(p=>`<div class="passenger"><span class="avatar">${p.name.split(' ').map(x=>x[0]).join('').slice(0,2)}</span><span><strong>${p.name}</strong><small>${p.note}</small></span><button class="icon-button" style="color:var(--brand);background:var(--brand-soft)" data-action="simulate" data-message="Hívás indítva: ${p.phone}">${icons.phone}</button></div>`).join('')}</section>`:`<div class="alert" style="margin-top:14px">${icons.alert}<div><strong>Telekocsi egyszerűsített nézet</strong><p>Nincs utasnév, telefonszám, navigáció vagy járatadat. Az utaslétszám indulás előtt manuálisan rögzíthető.</p></div></div><div class="description-row"><dt>Tényleges létszám</dt><dd><div class="counter"><button data-action="count" data-id="${item.id}" data-delta="-1">−</button><strong>${count===null?'?':count}</strong><button data-action="count" data-id="${item.id}" data-delta="1">+</button></div></dd></div>`}
+          ${item.id==='t1'?`<button class="btn primary" style="width:100%;margin-top:14px" data-action="advance-trip" data-id="t1">${statusButton('t1')}</button>`:''}`);
+      }
+
+      function sheet(title, body) { return `<div class="overlay" data-action="close-modal"><section class="sheet" role="dialog" aria-modal="true" aria-label="${title}" data-stop><header class="sheet-head"><h2>${title}</h2><button class="close" data-action="close-modal" aria-label="Bezárás">${icons.close}</button></header><div class="sheet-body">${body}</div></section></div>`; }
+
+      function renderModal() {
+        if (!state.modal) { modalRoot.innerHTML=''; return; }
+        if (state.modal.type==='trip') modalRoot.innerHTML = tripModal(trip(state.modal.id));
+        if (state.modal.type==='message') {
+          const m=state.messages.find(x=>x.id===state.modal.id);
+          modalRoot.innerHTML=sheet(m.title, `<span class="badge blue">${m.from}</span><p class="meta" style="margin-top:8px">${m.time}</p><p style="line-height:1.65">${m.body}</p><button class="btn primary" style="width:100%;margin-top:12px" data-action="close-modal">Rendben</button>`);
+        }
+        if (state.modal==='demo') modalRoot.innerHTML=sheet('Demó beállítások', `<div class="alert">${icons.alert}<div><strong>Ez egy önálló szimulátor</strong><p>Minden művelet csak ebben a böngészőben változtatja a mintaállapotot.</p></div></div><button class="btn danger" style="width:100%;margin-top:16px" data-action="reset-demo">Demó visszaállítása alapállapotra</button>`);
+        if (state.modal==='cost') modalRoot.innerHTML=sheet('Új kiadás', `<form class="form-grid" data-form="cost"><label>Kategória<select name="type"><option>Parkolás</option><option>Mosás</option><option>Reptéri behajtás</option><option>Tankolás</option><option>Egyéb</option></select></label><label>Összeg (Ft)<input name="amount" type="number" inputmode="numeric" min="0" placeholder="pl. 3000" required></label><label>Megjegyzés<input name="note" placeholder="pl. reptéri parkolás"></label><button class="btn primary" type="submit">Kiadás hozzáadása</button></form>`);
+        if (state.modal==='package') modalRoot.innerHTML=sheet('Csomagpénz bevétel', `<form class="form-grid" data-form="package"><label>Összeg (Ft)<input name="amount" type="number" inputmode="numeric" min="0" value="${state.packageIncome}" required></label><label>Megjegyzés<input name="note" placeholder="pl. csomag Debrecenbe"></label><button class="btn primary" type="submit">Bevétel mentése</button></form>`);
+        if (state.modal==='issue') modalRoot.innerHTML=sheet('Új járműhiba', `<form class="form-grid" data-form="issue"><label>Hiba típusa<select name="type"><option>Gumi / kerék</option><option>Karosszéria</option><option>Motor / műszerfal</option><option>Utastér</option><option>Egyéb</option></select></label><label>Súlyosság<select name="severity"><option>Alacsony</option><option selected>Közepes</option><option>Kritikus – nem indulok el</option></select></label><label>Leírás<textarea name="description" placeholder="Írd le röviden a hibát" required></textarea></label><label>Fotók (szimuláció)<input type="file" accept="image/*" multiple></label><button class="btn primary" type="submit">Hiba bejelentése</button></form>`);
+        if (state.modal==='unexpected-vehicle') modalRoot.innerHTML=sheet('Másik jármű használata', `<div class="alert">${icons.alert}<div><strong>Irodai jóváhagyást igényel</strong><p>A váratlan járműcsere azonnal megjelenik a diszpécsernél.</p></div></div><form class="form-grid" data-form="vehicle"><label>Használt jármű<select name="vehicle"><option>NMX-608 · Ford Tourneo</option><option>AA-ZZ-123 · Külsős jármű</option></select></label><label>Indok<textarea name="reason" required placeholder="Miért kellett járművet cserélni?"></textarea></label><button class="btn primary" type="submit">Jóváhagyás kérése</button></form>`);
+        if (state.modal==='add-trip') modalRoot.innerHTML=sheet('Fuvar hozzáadása', `<div class="grid-2"><button class="btn" data-action="simulate" data-message="Új transzfer űrlap megnyitva">+ Transzfer</button><button class="btn" data-action="simulate" data-message="Új telekocsi űrlap megnyitva">+ Telekocsi</button></div><p class="meta" style="margin-top:12px">A production változatban az új fuvar eltérésként kerül az irodai jóváhagyási sorba.</p>`);
+      }
+
+      function advanceTrip(id) {
+        const steps=['assigned','to_pickup','arrived','onboard','completed'];
+        const current=state.tripStatus[id]; const index=steps.indexOf(current);
+        if (index>=0 && index<steps.length-1) state.tripStatus[id]=steps[index+1];
+        showToast(statusLabel(id)); render();
+      }
+
+      document.addEventListener('click', event => {
+        const stop=event.target.closest('[data-stop]');
+        const control=event.target.closest('[data-action]');
+        if (!control) return;
+        if (control.dataset.action==='close-modal' && stop && control===event.target.closest('.overlay')) return;
+        const action=control.dataset.action;
+        if (action==='tab') { state.tab=control.dataset.tab; state.modal=null; window.scrollTo({top:0,behavior:'smooth'}); render(); }
+        if (action==='open-modal') { state.modal=control.dataset.modal; renderModal(); }
+        if (action==='close-modal') { state.modal=null; renderModal(); }
+        if (action==='open-trip') { state.modal={type:'trip',id:control.dataset.id}; renderModal(); }
+        if (action==='open-message') { const m=state.messages.find(x=>x.id===control.dataset.id); m.unread=false; state.modal={type:'message',id:m.id}; render(); }
+        if (action==='advance-trip') advanceTrip(control.dataset.id);
+        if (action==='dismiss-reminder') { state.reminderDismissed=true; showToast('Emlékeztető elrejtve'); render(); }
+        if (action==='toggle-report') { const id=control.dataset.id; state.openReports=state.openReports.includes(id)?state.openReports.filter(x=>x!==id):[...state.openReports,id]; render(); }
+        if (action==='count') { const id=control.dataset.id; const current=state.carpoolCounts[id]; const base=current===null?0:current; state.carpoolCounts[id]=Math.max(0,Math.min(8,base+Number(control.dataset.delta))); render(); }
+        if (action==='submit-report') { state.reportStatus='submitted'; showToast('A napi jelentés beküldve az irodának'); render(); }
+        if (action==='simulate') showToast(control.dataset.message || 'Szimulált művelet kész');
+        if (action==='day') showToast('A kiválasztott nap mintaadatai megnyitva');
+        if (action==='reset-demo') { state=clone(initialState); localStorage.removeItem('driver-demo-v1'); showToast('A demó visszaállt alapállapotra'); render(); }
+      });
+
+      document.addEventListener('change', event => {
+        if (event.target.matches('[data-field="note"]')) { state.note=event.target.value; save(); }
+        if (event.target.matches('[data-field="vehicle"]')) { state.vehicleId=event.target.value; if(event.target.value==='other'){state.modal='unexpected-vehicle';renderModal();} else {showToast('Jármű kiválasztva');save();} }
+      });
+
+      document.addEventListener('submit', event => {
+        const form=event.target.closest('form[data-form]'); if(!form) return; event.preventDefault();
+        const data=new FormData(form);
+        if(form.dataset.form==='cost') state.costs.push({id:'c'+Date.now(),type:data.get('type'),amount:Number(data.get('amount')),note:data.get('note')||'Nincs megjegyzés'});
+        if(form.dataset.form==='package') state.packageIncome=Number(data.get('amount'));
+        if(form.dataset.form==='issue') state.issues.unshift({id:'i'+Date.now(),title:data.get('description'),meta:`${data.get('severity')} · Most bejelentve`,state:'Új'});
+        state.modal=null; showToast(form.dataset.form==='issue'?'A járműhiba bejelentve':'Tétel mentve'); render();
+      });
+
+      render();
+    </script>
+  </body>
 </html>
